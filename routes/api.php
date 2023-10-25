@@ -18,11 +18,13 @@ Route::prefix('tournament')->group(function () {
 
 Route::prefix('participant')->group(function () {
     Route::post('/', [Participants::class, 'insertParticipantInTorunament']);
+    Route::get('/{id}', [Participants::class, 'getTournamentParticipantsByCategorie']);
     Route::post('/file/{id}', [Participants::class, 'insertParticipantsFromXlsx']);
     Route::get('/', [Participants::class, 'getTournamentParticipants']);
+    
 });
 
 Route::prefix('match')->group(function () {
     Route::post('/', [Matchs::class, 'generateTournamentMatch']);
-  
+    Route::get('/{id}', [Matchs::class, 'getTournamentMatchesById']);
 });
