@@ -16,11 +16,11 @@ class CreateMatch extends Migration
         //
         Schema::create('match', function (Blueprint $table) {
             $table->id();
-            $table->string('first_fighter');
-            $table->string('second_fighter');
-            $table->string('result'); 
-            $table->string('stage'); 
-            $table->string('score'); 
+            $table->string('first_fighter')->nullable();
+            $table->string('second_fighter')->nullable();
+            $table->string('result')->nullable(); 
+            $table->string('stage')->nullable();
+            $table->string('score')->nullable(); 
             $table->unsignedBigInteger('tournament_id');
             $table->foreign('tournament_id')->references('id')->on('tournaments');
         });
@@ -34,6 +34,6 @@ class CreateMatch extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('match');
     }
 }

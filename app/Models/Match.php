@@ -11,7 +11,7 @@ class Match extends Model
     use HasFactory;
     public $timestamps = false;
     protected $fillable = ['first_fighter', 'second_fighter', 'result', 'score', 'tournament_id', 'stage'];
-
+    protected $table = 'match';
     // Relacionamento com o usuário (owner)
     public function ownerUser()
     {
