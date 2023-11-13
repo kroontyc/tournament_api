@@ -9,7 +9,7 @@ class Tournament extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['owner_id', 'name', 'data', 'reward'];
+    protected $fillable = ['owner_id', 'name', 'data', 'reward', 'local', 'federacao'];
 
     // Relacionamento com o usuário (owner)
     public function ownerUser()

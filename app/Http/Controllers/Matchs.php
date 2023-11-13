@@ -35,9 +35,16 @@ class Matchs extends Controller
             $secondParticipant = $participants->shift();
     
             // Crie a partida correspondente
+         
             $matchData = [
                 'first_fighter' => $firstParticipant->id,
                 'second_fighter' => $secondParticipant->id,
+                'first_fighter_brand' => $firstParticipant->team_name ?? 'VAZIO',
+                'second_fighter_brand' => $secondParticipant->team_name ?? 'VAZIO',
+                'first_fighter_name' => $firstParticipant->name ?? 'VAZIO',
+                'second_fighter_name' => $secondParticipant->name ?? 'VAZIO',
+                'first_fighter_categorie' => $firstParticipant->categorie,
+                 'second_fighter_categorie' => $secondParticipant->categorie,
                 'result' => 'VAZIO',
                 'score' => 'VAZIO',
                 'tournament_id' => $tournamentId,
@@ -50,11 +57,13 @@ class Matchs extends Controller
             // Construa a resposta
             $matchInfo = [
                 'first_fighter' => $firstParticipant->id,
-                'first_fighter_brand' => $firstParticipant->team_name,
+                'first_fighter_brand' => $firstParticipant->team_name ?? 'VAZIO',
                 'second_fighter' => $secondParticipant->id,
-                'second_fighter_brand' => $secondParticipant->team_name,
-                'first_fighter_name' => $firstParticipant->name,
-                'second_fighter_name' => $secondParticipant->name,
+                'second_fighter_categorie' => $secondParticipant->categorie,
+                 'first_fighter_categorie' => $firstParticipant->categorie,
+                'second_fighter_brand' => $secondParticipant->team_name ?? 'VAZIO',
+                'first_fighter_name' => $firstParticipant->name ?? 'VAZIO',
+                'second_fighter_name' => $secondParticipant->name ?? 'VAZIO',
                 'result' => $matchData['result'],
                 'score' => $matchData['score'],
                 'stage' => $matchData['stage'],
@@ -72,9 +81,10 @@ class Matchs extends Controller
     {
         // Use o parâmetro $id para obter o tournament_id
         $tournamentId = $id;
-        
+        $perPage = $request->query('perPage', 20); 
+        $page = $request->header('page', 1);
         // Agora, você pode usar $tournamentId para buscar as partidas
-        $matches = Match::where('tournament_id', $tournamentId)->get();
+        $matches = Match::where('tournament_id', $tournamentId)->paginate($perPage, ['*'], 'page', $page);
         
         return response()->json($matches, 200);
     }

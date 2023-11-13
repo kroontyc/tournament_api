@@ -35,18 +35,57 @@ class Participants extends Controller
        }
     }
 
-    public function getTournamentParticipants(Request $request)
+    public function getTournamentParticipants(Request $request, $id)
     {
-       $data = $request->all();
-       //echo($data['name']);
-       $verifyExistTournament = Tournament::where('id', $data['tournament_id'])->get();
-       //echo $verifyExistTournament;
-       if(count($verifyExistTournament) > 0) {
-        $participants = Participant::where('tournament_id', $data['tournament_id'])->get();
-        return response()->json(['data' => $participants], 200);
-       }else {
-        return response()->json(['data' => $verifyExistTournament], 200);
-       }
+        $perPage = $request->query('perPage', 20); 
+        $page = $request->header('page', 1);
+
+        //echo 'asa', $page;
+
+        $verifyExistTournament = Tournament::where('id', $id)->first();
+        if($verifyExistTournament) {
+            // Utiliza o método paginate() para obter registros paginados
+            $participants = Participant::where('tournament_id', $id)->paginate($perPage, ['*'], 'page', $page);
+
+            return response()->json($participants, 200);
+        } else {
+            return response()->json(['message' => 'Tournament not found'], 404);
+        }
+    }
+
+    public function editParticipant(Request $request, $id)
+    {
+        
+        $participant = Participant::where('id', $id)->first();
+        $data = $request->all();
+
+        if($participant) {
+           $participant->name = $data['name'];
+           $participant->sex = $data['sex'];
+           $participant->age = $data['age'];
+           $participant->weight = $data['weight'];
+           $participant->height = $data['height'];
+           $participant->gub = $data['gub'];
+           $participant->team_name = $data['team_name'];
+           $participant->save();
+           return response()->json($participant, 200);
+        } else {
+            return response()->json(['message' => 'Tournament not found'], 404);
+        }
+    }
+
+     public function getOneParticipant(Request $request, $id)
+    {
+        
+        $participant = Participant::where('id', $id)->first();
+        $data = $request->all();
+
+        if($participant) {
+          
+           return response()->json($participant, 200);
+        } else {
+            return response()->json(['message' => 'Tournament not found'], 404);
+        }
     }
 
 

@@ -14,6 +14,8 @@ class Tournament extends JsonResource
             'name' => $this->name,
             'data' => $this->data,
             'reward' => $this->reward,
+            'location' => $this->local,
+            'federation' => $this->federacao,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
