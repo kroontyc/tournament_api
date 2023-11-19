@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\Participants;
 use App\Http\Controllers\Matchs;
+use App\Http\Controllers\Categorie;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -31,4 +32,10 @@ Route::prefix('participant')->group(function () {
 Route::prefix('match')->group(function () {
     Route::post('/', [Matchs::class, 'generateTournamentMatch']);
     Route::get('/{id}', [Matchs::class, 'getTournamentMatchesById']);
+});
+
+
+Route::prefix('categories')->group(function () {
+    Route::post('/', [Categorie::class, 'create']);
+    Route::get('/{id}', [Categorie::class, 'getAll']);
 });
