@@ -7,6 +7,7 @@ use App\Http\Controllers\Participants;
 use App\Http\Controllers\Matchs;
 use App\Http\Controllers\Categories;
 use App\Http\Controllers\ArenaController;
+use App\Http\Controllers\Results;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -44,4 +45,9 @@ Route::prefix('categories')->group(function () {
 Route::prefix('arenas')->group(function () {
     Route::post('/', [ArenaController::class, 'create']);
     Route::get('/{id}', [ArenaController::class, 'getAll']);
+});
+
+Route::prefix('result')->group(function () {
+    Route::post('/', [Results::class, 'createResult']);
+
 });
