@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tournament;
 use App\Models\Match;
+use App\Models\Arena;
 use App\Models\Participant;
 use App\Http\Resources\Tournament as TournamentResource;
 
@@ -107,6 +108,28 @@ class Matchs extends Controller
         $matches = Match::where('tournament_id', $tournamentId)->paginate($perPage, ['*'], 'page', $page);
         
         return response()->json($matches, 200);
+    }
+
+    public function createNewMatch(Request $request, $id)
+    {
+        $data = $request->all();
+        $arena = $id;
+        $currentArena = Arena::where('id', $arena)->first();
+        if( $currentArena) {
+            $currentArena->current_match =  $data['match_id'];
+            $currentArena->fighter_1 =  $data['fighter_1'];
+            $currentArena->fighter_2 =  $data['fighter_2'];
+         
+            $match = Match::where('id', $data['match_id'])->first();
+            $match->arena_id = $currentArena->id;
+            $currentArena->first_fighter_name =  $match->first_fighter_name;
+            $currentArena->second_fighter_name =  $match->second_fighter_name;
+            $match->arena_name = $currentArena->name;
+            $match->save();
+            $currentArena->save();
+
+        }
+        return response()->json(['match' => $currentArena], 200);
     }
    
 }

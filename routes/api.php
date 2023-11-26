@@ -32,6 +32,7 @@ Route::prefix('participant')->group(function () {
 Route::prefix('match')->group(function () {
     Route::post('/', [Matchs::class, 'generateTournamentMatch']);
     Route::get('/{id}', [Matchs::class, 'getTournamentMatchesById']);
+    Route::post('/{id}', [Matchs::class, 'createNewMatch']);
 });
 
 
