@@ -20,22 +20,33 @@ class ResultController extends Controller
         try {
             // Tentar criar o torneio
             $result = Result::create([
-                'match_id' =>  $data['match_id'],
-                'arena_id' =>  $data['arena_id'],
+                'match_id' =>  $data['match_id'] ?? null,
+                'arena_id' =>  $data['arena_id'] ?? null,
                 'winner' =>  $data['winner'],
                 'p1' => $data['p1'],
                 'p2' =>  $data['p2']
          
             ]);
-            $arena = Arena::where('id', $result->arena_id)->first();
-            $arena->current_match = NULL;
             $people = Participant::where('id', $result->winner)->first();
             $match = Match::where('id', $result->match_id)->first();
+            if($data['p1_score'] || $data['p2_score']) {
+                $match->p1_score = $data['p1_score'];
+                $match->p2_score = $data['p2_score'];
+                $match->accStage = $data['acc'];
+                $match->winner_team = $people->team_name;
+            }
+           if($data['arena_id']) {
+             $arena = Arena::where('id', $result->arena_id)->first();
+             $arena->current_match = NULL;
+             $arena->save();
+           }
+         
+          
             $match->arena_name = 'Concluido';
             $match->arena_id = NULL;
             $match->result = $people->name;
             $match->save();
-            $arena->save();
+           
 
             // Retornar o torneio criado no formato do Resource
             return $result;

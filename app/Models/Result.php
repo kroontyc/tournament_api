@@ -9,6 +9,6 @@ class Result extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $fillable = ['arena_id', 'winner', 'p1', 'p2', 'match_id'];
+    protected $fillable = ['winner', 'p1', 'p2', 'match_id'];
     protected $table = 'results';
 }
