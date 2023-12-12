@@ -25,7 +25,8 @@ class TournamentController extends Controller
             ]);
 
             // Retornar o torneio criado no formato do Resource
-            return $tournament;
+         
+             return response()->json(['data' => $tournament], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao criar o torneio: ' . $e->getMessage()], 500);
         }
