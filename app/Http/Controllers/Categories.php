@@ -9,68 +9,34 @@ use App\Models\Tournament;
 class Categories extends Controller
 {
     //
-    public function getAll(Request $request, $id)
+  public function getAll(Request $request, $id)
   {
     $tournament_id = $request->header('tournament');
+    $getAllCategories = Categorie::where('owner_id', $id)->get()->map(function ($category) {
+        // Decodifica o campo 'ruler' que está armazenado como JSON no banco de dados
+        $category->ruler = json_decode($category->ruler);
+        return $category;
+    });
 
-    // Obtendo todas as categorias que correspondem ao owner_id
-    $getAllCategories = Categorie::where('owner_id', $id)->get();
+    return response()->json($getAllCategories, 200);
+  }
+  public function create(Request $request)
+  {
+      
+      $data = $request->all();
+      
+      $categorie = [
+          'min_weight'  =>   $data['min_weight'] ?? 'VAZIO',
+          'max_weight'  =>   $data['max_weight'] ?? 'VAZIO',
+          'height' => 'VAZIO',
+          'name' => $data['name'],
+          'ruler' => $data['ruler'],
+          'status' => 1,
+          'owner_id' => $data['owner_id']
+      ];
 
-    // Obtendo todos os participantes que correspondem ao tournament_id
-    $allCategoriesParticipants = Participant::where('tournament_id', $tournament_id)->get();
+      Categorie::create($categorie);
 
-    // Criando um array para armazenar os nomes já adicionados
-    $addedNames = [];
-
-    // Criando um novo array para armazenar os participantes formatados e as categorias
-    $combinedData = [];
-
-    // Adicionando as categorias ao array combinado
-    foreach ($getAllCategories as $category) {
-        $combinedData[] = $category;
-    }
-
-    // Usando foreach para formatar e adicionar cada participante ao array combinado
-    foreach ($allCategoriesParticipants as $participant) {
-        $categoryName = $participant->categorie != 'vazio' ? $participant->categorie : 'vazio';
-
-        // Verificando se o nome da categoria já foi adicionado
-        if (!in_array($categoryName, $addedNames)) {
-            $combinedData[] = [
-                "id" => $participant->id,
-                "min_weight" => $participant->weight != 'vazio' ? $participant->weight : "VAZIO",
-                "max_weight" => $participant->weight != 'vazio' ? $participant->weight : "VAZIO",
-                "height" => $participant->weight != 'vazio' ? $participant->weight : "VAZIO",
-                "name" => $categoryName,
-                "status" => "1",
-                "owner_id" => $id,
-                "ruler" => $participant->weight != 'vazio' ? $participant->weight : "VAZIO",
-            ];
-
-            // Adicionando o nome da categoria à lista de nomes já adicionados
-            $addedNames[] = $categoryName;
-        }
-    }
-
-    return response()->json($combinedData, 200);
-}
-    public function create(Request $request)
-    {
-        
-        $data = $request->all();
-        
-        $categorie = [
-            'min_weight'  =>   $data['min_weight'] ?? 'VAZIO',
-            'max_weight'  =>   $data['max_weight'] ?? 'VAZIO',
-            'height' => 'VAZIO',
-            'name' => $data['name'],
-            'ruler' => $data['ruler'],
-            'status' => 1,
-            'owner_id' => $data['owner_id']
-        ];
-
-        Categorie::create($categorie);
-  
-        return response()->json($categorie, 200);
-    }
+      return response()->json($categorie, 200);
+  }
 }
