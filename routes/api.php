@@ -8,6 +8,9 @@ use App\Http\Controllers\Matchs;
 use App\Http\Controllers\Categories;
 use App\Http\Controllers\ArenaController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\RankController;
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -28,6 +31,13 @@ Route::prefix('participant')->group(function () {
     Route::post('/file/{id}', [Participants::class, 'insertParticipantsFromXlsx']);
     Route::get('/peoples/{id}', [Participants::class, 'getTournamentParticipants']);
     
+});
+
+Route::prefix('ranking')->group(function () {
+    Route::get('/{id}', [RankController::class, 'getRanksByTournament']);
+    Route::put('/{id}', [RankController::class, 'updateRanking']);
+    Route::post('/ranking', [RankController::class, 'deleteRanking']);
+    Route::post('/', [RankController::class, 'createRanking']);
 });
 
 Route::prefix('match')->group(function () {
