@@ -9,12 +9,12 @@ use App\Http\Controllers\Categories;
 use App\Http\Controllers\ArenaController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\RankController;
-
+use App\Http\Controllers\ScoreController;
+use App\Http\Controllers\AuthController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 
 Route::prefix('tournament')->group(function () {
     Route::post('/', [TournamentController::class, 'createTournament']);
@@ -59,5 +59,12 @@ Route::prefix('arenas')->group(function () {
 
 Route::prefix('result')->group(function () {
     Route::post('/', [ResultController::class, 'createResult']);
-
 });
+
+Route::get('/scores', [ScoreController::class, 'index']); // Fetch all scores
+Route::get('/scores/{id}', [ScoreController::class, 'show']); // Fetch a specific score
+Route::put('/scores/{id}', [ScoreController::class, 'update']); // Update a specific scoree
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');

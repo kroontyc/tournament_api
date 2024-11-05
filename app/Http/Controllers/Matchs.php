@@ -150,6 +150,12 @@ class Matchs extends Controller
         if ($participants->isEmpty()) {
             return response()->json(['message' => 'Nenhum participante encontrado para este torneio.'], 404);
         }
+
+        $existMatch = Match::where('tournament_id', $id)->first();
+
+        if($existMatch) {
+            return response()->json($existMatch);
+        }
     
         $groupedCategories = [];
     
@@ -221,24 +227,17 @@ class Matchs extends Controller
 
     public function createNewMatch(Request $request, $id)
     {
-        $data = $request->all();
-        $arena = $id;
-        $currentArena = Arena::where('id', $arena)->first();
-        if( $currentArena) {
-        $currentArena->current_match =  $data['match_id'];
-        $currentArena->fighter_1 =  $data['fighter_1'];
-        $currentArena->fighter_2 =  $data['fighter_2'];
-        
-        $match = Match::where('id', $data['match_id'])->first();
-        $match->arena_id = $currentArena->id;
-        $currentArena->first_fighter_name =  $match->first_fighter_name;
-        $currentArena->second_fighter_name =  $match->second_fighter_name;
-        $match->arena_name = $currentArena->name;
-        $match->save();
-        $currentArena->save();
-
-        }
-        return response()->json(['match' => $currentArena], 200);
+        $request->validate([
+            'json_match' => 'required',
+        ]);
+    
+        // Procura o match pelo ID e cria um novo se não existir
+        $match = Match::updateOrCreate(
+            ['tournament_id' => $id], // Condição para encontrar o registro
+            ['json_match' => $request->json_match] // Dados para atualização/criação
+        );
+    
+        return response()->json(['match' => $match], 200);
     }
     
 }
