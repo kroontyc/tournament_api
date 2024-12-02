@@ -57,6 +57,8 @@ Route::prefix('arenas')->group(function () {
     Route::get('/{id}', [ArenaController::class, 'getAll']);
 });
 
+
+
 Route::prefix('result')->group(function () {
     Route::post('/', [ResultController::class, 'createResult']);
 });
