@@ -8,6 +8,9 @@ use App\Models\Match;
 use App\Models\Arena;
 use App\Models\Categorie;
 use App\Models\Participant;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+
 use App\Http\Resources\Tournament as TournamentResource;
 
 class Matchs extends Controller
@@ -151,11 +154,7 @@ class Matchs extends Controller
             return response()->json(['message' => 'Nenhum participante encontrado para este torneio.'], 404);
         }
 
-        $existMatch = Match::where('tournament_id', $id)->first();
-
-        if($existMatch) {
-            return response()->json($existMatch);
-        }
+   
     
         $groupedCategories = [];
     
@@ -220,9 +219,23 @@ class Matchs extends Controller
         }
     
         // Prepare the final response
-        $response = array_values($groupedCategories);
-    
-        return response()->json($response);
+        $groupedCategoriesArray = array_values($groupedCategories);
+
+        // Paginação
+        $page = $request->input('page', 1); // Página atual
+        $perPage = 500; // Apenas 1 valor por página
+        $offset = ($page - 1) * $perPage;
+        $paginatedItems = array_slice($groupedCategoriesArray, $offset, $perPage);
+
+        $paginatedResponse = new LengthAwarePaginator(
+            $paginatedItems,
+            count($groupedCategoriesArray),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+    return response()->json($paginatedResponse);
     }
 
     public function createNewMatch(Request $request, $id)
@@ -236,6 +249,38 @@ class Matchs extends Controller
             ['tournament_id' => $id], // Condição para encontrar o registro
             ['json_match' => $request->json_match] // Dados para atualização/criação
         );
+    
+        return response()->json(['match' => $match], 200);
+    }
+
+    public function save_matches(Request $request)
+    {
+        $request->validate([
+            'json_match' => 'required',
+            'categorie' => 'required', // Valida que a categoria seja enviada
+        ]);
+    
+        $jsonMatch = json_encode($request->json_match);
+    
+        // Atualizar ou criar o registro baseado na categoria
+        $match = Match::updateOrCreate(
+            ['categorie' => $request->categorie], // Condição para verificar se o registro existe
+            [
+                'tournament_id' => $request->tournament_id,
+                'json_match' => $jsonMatch
+            ]
+        );
+    
+        return response()->json(['match' => $match], 200);
+    }
+
+    public function getRecoveryMatch(Request $request)
+    {
+        $request->validate([
+            'categorie' => 'required',
+        ]);
+        // Procura o match pelo ID e cria um novo se não existir
+        $match = Match::where('categorie', $request->categorie)->first();
     
         return response()->json(['match' => $match], 200);
     }

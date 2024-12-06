@@ -46,6 +46,8 @@ Route::prefix('match')->group(function () {
     Route::post('/{id}', [Matchs::class, 'createNewMatch']);
 });
 
+Route::post('/save/match', [Matchs::class, 'save_matches']);
+Route::post('recovery/match', [Matchs::class, 'getRecoveryMatch'])->middleware('throttle:unlimited');;
 
 Route::prefix('categories')->group(function () {
     Route::post('/', [Categories::class, 'create']);
@@ -56,8 +58,6 @@ Route::prefix('arenas')->group(function () {
     Route::post('/', [ArenaController::class, 'create']);
     Route::get('/{id}', [ArenaController::class, 'getAll']);
 });
-
-
 
 Route::prefix('result')->group(function () {
     Route::post('/', [ResultController::class, 'createResult']);
